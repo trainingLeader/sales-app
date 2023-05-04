@@ -1,6 +1,9 @@
 import CustomerModel from "../models/customer-model.js";
 const URL_API = "https://645284a1bce0b0a0f74921a3.mockapi.io/"
-
+const frmRegistro = document.querySelector('#frmData');
+const inputFrm = document.forms['frmData'];
+const botones = document.querySelectorAll('.btn');
+let idUser = 0;
 const myHeaders = new Headers({
 	"Content-Type": "application/json"
 });
@@ -14,13 +17,31 @@ const postCustomer = (datos) =>{
     ).then(res=>{
         return res.json()
     }).then(res=>{
+        idUser=res.id;
         console.log(res);
     }).catch(err=>{
         console.log(err);
     })
 
 }
+const putCustomer = (datos) =>{
+    fetch(`${URL_API}customers/${idUser}`,
+	{
+		method: "PUT",
+		headers: myHeaders,
+		body:JSON.stringify(datos)
+	}
+    ).then(res=>{
+        return res.json()
+        
+    }).then(res=>{
+       
+        console.log(res);
+    }).catch(err=>{
+        console.log(err);
+    })
 
+}
 const getCustomers = async() => {
     try {
         const respuesta = await fetch(`${URL_API}/customers`);
@@ -56,6 +77,9 @@ document.querySelectorAll('.tabOpcion').forEach((val,id)=>{
     val.addEventListener("click",(e)=>{
         let datos = JSON.parse(e.target.dataset.verocultar);
         let cardVer = document.querySelector(datos[0]);
+        if(cardVer.id == 'reg'){
+
+        }
         cardVer.style.display = 'block';
         datos[1].forEach(card => {
             let cardActual = document.querySelector(card);
@@ -65,6 +89,50 @@ document.querySelectorAll('.tabOpcion').forEach((val,id)=>{
         e.preventDefault();
     })
 });
-function viewDataHtml(dataCustomer){
-    console.log(dataCustomer);
+// function viewDataHtml(datos){
+//     const tablaClientes = document.querySelector('.lst');
+//     tablaClientes.innerHTML = '';
+//     datos.map((item)=>{
+//         const costumerInfo = document.createElement('div');
+//         costumerInfo.className = 'col-6'
+//         costumerInfo.innerHTML = /*html*/`
+//         <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+//             <div class="card-header">${item.createdAt}</div>
+//                 <div class="card-body">
+//                     <h5 class="card-title">${item.nombres} ${item.apellidos}</h5>
+//                     <p class="card-text">${item.email}</p>
+//             </div>
+//         </div>
+//         `;
+//         tablaClientes.appendChild(costumerInfo);
+//     })
+// }
+document.querySelectorAll('.btn').forEach((e) =>{
+    e.addEventListener("click",(evento)=>{
+        let datos = JSON.parse(evento.target.dataset.activardesactiva);
+        let cardVer = document.querySelector(datos[0]);
+        datos[0].forEach(btnActivar =>{
+            let btndActual = document.querySelector(btnActivar);
+            btndActual.classList.toggle('disabled');
+        })
+        datos[1].forEach(btnActivar =>{
+            let btndActual = document.querySelector(btnActivar);
+            if (!(btndActual.classList.contains('disabled'))){
+                btndActual.classList.toggle('disabled');
+            }
+        })
+    })
+})
+
+document.querySelector('#btnGuardar').addEventListener("click", (e) =>{
+    const datos = Object.fromEntries(new FormData(frmRegistro).entries());
+    console.log(datos);
+    postCustomer(datos);
+})
+document.querySelector('#btnEditar').addEventListener("click", (e) =>{
+    const datos = Object.fromEntries(new FormData(frmRegistro).entries());
+    putCustomer(datos);
+})
+function ActivarBtn(){
+
 }
